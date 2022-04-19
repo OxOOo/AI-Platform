@@ -44,7 +44,7 @@ class Chessboard:
         self.map = np.zeros((11, 11), dtype=np.int32)
         self.current_player = 1
 
-    def __check_win(self):
+    def check_win(self):
         dx = [0, 1, 1, 1]
         dy = [1, 0, -1, 1]
         for player in [1, 2]:
@@ -85,7 +85,6 @@ class Chessboard:
             raise Result(Win.AI2_WIN if self.current_player == 1 else Win.AI1_WIN, f"落子({x}, {y})已经有棋子")
 
         self.map[x][y] = self.current_player
-        self.__check_win()
         self.current_player = 1 + 2 - self.current_player
 
     def str_status(self):
@@ -163,6 +162,7 @@ def main():
             raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}初始化失败，输出为`{line}`")
 
     board = Chessboard()
+    moves = []
     while not board.is_full():
         status = board.str_status()
         player = board.current_player
@@ -179,6 +179,10 @@ def main():
         except:
             raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}输出错误：`{line}`")
         board.move(x, y)
+        moves.append({"x": x, "y": y, "player": player})
+        with open("/root/output/moves.json", "w") as fd:
+            json.dump(moves, fd, indent=4)
+        board.check_win()
     raise Result(Win.TIE, "平局")
 
 
