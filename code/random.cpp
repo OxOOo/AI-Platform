@@ -12,6 +12,7 @@ int main()
 {
     // 如果有什么初始化，可以写在这里
     // 初始化结束输出`init end`
+    srand(time(0));
     cout << "init end" << endl;
 
     while (cin >> player)
