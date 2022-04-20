@@ -23,6 +23,14 @@ command="$command -v $ai2_path:/root/code/ai2.cpp:ro"
 command="$command -v $PWD/run.py:/root/code/run.py:ro"
 command="$command -v $output_dir:/root/output"
 
+# 限制
+command="$command --cpus 1"
+if [ "$CPUSET" != "" ]; then
+    command="$command --cpuset-cpus $CPUSET"
+fi
+command="$command --memory 1073741824"
+command="$command --network none"
+
 if [ "$running_container_name" != "" ]; then
     command="$command --name $running_container_name"
 fi

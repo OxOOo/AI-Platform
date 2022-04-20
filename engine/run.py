@@ -130,6 +130,14 @@ def wait_readable(io, timeout: int, timeout_result: Result):
     raise timeout_result
 
 
+def set_ai_user(player: int):
+    def set_ids():
+        os.setgid(1000 + player)
+        os.setuid(1000 + player)
+
+    return set_ids
+
+
 @timeout(60 * 10)
 def main():
     # 编译
@@ -151,9 +159,15 @@ def main():
         except Exception:
             raise Result(win, f"AI{num}编译失败")
 
+    # 设置权限
+    assert os.system("chmod a+x /root") == 0
+    assert os.system("chmod a+x /root/code") == 0
+    assert os.system("chmod a+x /root/code/ai1.exe") == 0
+    assert os.system("chmod a+x /root/code/ai2.exe") == 0
+
     # 初始化
     for player in [1, 2]:
-        ais[player] = subprocess.Popen([f"/root/code/ai{player}.exe"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        ais[player] = subprocess.Popen([f"/root/code/ai{player}.exe"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn=set_ai_user(player))
     for player in [1, 2]:
         wait_readable(ais[player].stdout, 10, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}初始化超时"))
         line = ais[player].stdout.readline()
