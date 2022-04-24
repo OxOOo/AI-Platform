@@ -15,6 +15,7 @@ exports.CreateUserRound = async (user) => {
         if (!other_ai) continue;
         other_ais.push(other_ai);
     }
+    assert(other_ais.length > 0, "暂时没有其他人提交AI");
 
     let battle_ids = [];
     for (let other_ai of other_ais) {

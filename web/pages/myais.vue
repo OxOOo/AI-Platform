@@ -1,5 +1,11 @@
 <template>
   <div>
+    <p>
+      和其他所有人进行一次对战：
+      <a-button type="primary" @click="handleCreateUserRound">
+        我要打十个！！！
+      </a-button>
+    </p>
     <a-pagination
       v-model="condition.page"
       :page-size="page_size"
@@ -110,6 +116,10 @@ export default {
             const res = await this.$http.get("/ai/download", { ai_id: ai._id });
             const blob = new Blob([res.code], { type: "text/plain;charset=utf-8" });
             saveAs(blob, `ai${ai._id}.cpp`);
+        },
+        async handleCreateUserRound () {
+            await this.$http.post("/ai/create_user_round");
+            this.$message.success("创建对战成功");
         }
     }
 };
