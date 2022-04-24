@@ -37,7 +37,7 @@ export default {
                 if (!err) {
                     try {
                         this.submitting = true;
-                        await this.$http.post("ai/submit", {}, values);
+                        await this.$http.post("/ai/submit", {}, values);
                         this.$message.success("提交成功");
                         this.$router.push("/myais");
                     } finally {
