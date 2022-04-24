@@ -42,7 +42,7 @@ router.get("/ai/myais", auth.LoginRequired, async ctx => {
         data: ais.map(x => {
             return {
                 _id: x._id,
-                created_date: x._created_date,
+                created_date: x.created_date,
                 code_length: x.code.length
             };
         })
