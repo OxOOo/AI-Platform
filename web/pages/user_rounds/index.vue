@@ -1,11 +1,5 @@
 <template>
   <div>
-    <p>
-      和其他所有人进行一次对战：
-      <a-button type="primary" @click="handleCreateUserRound">
-        我要打十个！！！
-      </a-button>
-    </p>
     <a-pagination
       v-model="condition.page"
       :page-size="page_size"
@@ -13,17 +7,28 @@
       @change="handlePageChange"
     />
     <br>
-    <a-table :columns="columns" :data-source="ais" bordered row-key="_id" :pagination="false">
-      <span slot="bytes" slot-scope="num">
-        {{ showBytes(num) }}
+    <a-table :columns="columns" :data-source="user_rounds" bordered row-key="_id" :pagination="false">
+      <span slot="id" slot-scope="_,row">
+        <nuxt-link v-if="row.finished" :to="'/user_rounds/'+row._id">
+          {{ row._id }}
+        </nuxt-link>
+        <span v-else>{{ row._id }}</span>
+      </span>
+      <span slot="user" slot-scope="_,row">
+        {{ row.user.nickname }}
       </span>
       <span slot="datetime" slot-scope="datetime">
         {{ showDateTime(datetime) }}
       </span>
-      <span slot="action" slot-scope="text, row">
-        <a-button @click="handleDownload(row)">
-          下载
-        </a-button>
+      <span slot="status" slot-scope="_,row">
+        {{ row.finished ? "对战完成" : `对战中(${row.finished_battle_cnt}/${row.battles.length})` }}
+      </span>
+      <span slot="action" slot-scope="_, row">
+        <nuxt-link v-if="row.finished" :to="'/user_rounds/'+row._id">
+          <a-button>
+            查看
+          </a-button>
+        </nuxt-link>
       </span>
     </a-table>
     <br>
@@ -38,8 +43,6 @@
 
 <script>
 import moment from "moment";
-import bytes from "bytes";
-import { saveAs } from "file-saver";
 
 export default {
     layout: "main",
@@ -49,17 +52,21 @@ export default {
             columns: [
                 {
                     title: "编号",
-                    dataIndex: "_id",
-                    width: 100
+                    width: 100,
+                    scopedSlots: { customRender: "id" }
                 },
                 {
-                    title: "代码长度",
-                    width: 200,
-                    dataIndex: "code_length",
-                    scopedSlots: { customRender: "showbytes" }
+                    title: "发起人",
+                    width: 100,
+                    scopedSlots: { customRender: "user" }
                 },
                 {
-                    title: "提交时间",
+                    title: "对战状态",
+                    width: 100,
+                    scopedSlots: { customRender: "status" }
+                },
+                {
+                    title: "创建时间",
                     width: 200,
                     dataIndex: "created_date",
                     scopedSlots: { customRender: "datetime" }
@@ -70,7 +77,7 @@ export default {
                     scopedSlots: { customRender: "action" }
                 }
             ],
-            ais: [],
+            user_rounds: [],
             condition: {
                 page: parseInt(this.$route.query.page || 1) // 当前页码
             },
@@ -80,7 +87,7 @@ export default {
     },
     head () {
         return {
-            title: "我的AI列表"
+            title: "选手发起的对战列表"
         };
     },
     watch: {
@@ -95,32 +102,19 @@ export default {
         showDateTime (datetime) {
             return moment(datetime).format("YYYY-MM-DD HH:mm");
         },
-        showBytes (num) {
-            return bytes(num);
-        },
         async update () {
             this.condition.page = parseInt(this.$route.query.page || 1);
 
-            const res = await this.$http.get("/ai/myais", {
+            const res = await this.$http.get("/user_rounds", {
                 current: this.condition.page,
                 page_size: this.page_size
             });
-            this.ais = res.data;
+            this.user_rounds = res.data;
             this.total = res.total;
             this.page_size = res.page_size;
         },
         handlePageChange () {
-            this.$router.push({ path: "/myais", query: this.condition });
-        },
-        async handleDownload (ai) {
-            const res = await this.$http.get("/ai/download", { ai_id: ai._id });
-            const blob = new Blob([res.code], { type: "text/plain;charset=utf-8" });
-            saveAs(blob, `ai${ai._id}.cpp`);
-        },
-        async handleCreateUserRound () {
-            await this.$http.post("/ai/create_user_round");
-            this.$message.success("创建对战成功");
-            this.$router.push("/user_rounds");
+            this.$router.push({ path: "/user_rounds", query: this.condition });
         }
     }
 };

@@ -107,6 +107,11 @@ async function main() {
         if (idle_cpus.length > 0) {
             let battle = await Battle.findOneAndUpdate({ status: "pending" }, { status: "running" });
             if (battle) {
+                while (true) {
+                    if (battle.user_round) break;
+                    await sleep(100);
+                    battle = await Battle.findById(battle._id);
+                }
                 run_thread(idle_cpus.shift(), battle);
             }
         }

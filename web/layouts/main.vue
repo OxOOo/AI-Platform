@@ -24,6 +24,11 @@
               我的AI
             </nuxt-link>
           </a-menu-item>
+          <a-menu-item key="user_rounds">
+            <nuxt-link to="/user_rounds">
+              选手发起的对战
+            </nuxt-link>
+          </a-menu-item>
         </a-menu>
       </a-layout-header>
       <a-layout>
@@ -91,6 +96,8 @@ export default {
                 this.selected_menus = ["submit"];
             } else if (_.startsWith(path, "/myais")) {
                 this.selected_menus = ["myais"];
+            } else if (_.startsWith(path, "/user_rounds")) {
+                this.selected_menus = ["user_rounds"];
             } else {
                 this.selected_menus = [];
             }

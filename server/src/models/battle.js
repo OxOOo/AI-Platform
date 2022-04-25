@@ -2,6 +2,7 @@ let mongoose = require("mongoose");
 let autoIncrement = require("mongoose-auto-increment");
 
 // 两个AI之间进行一次对战，会交换先后手对战两次
+// 正常情况下user_round会被赋值
 let battleSchema = new mongoose.Schema({
     user_round: { // 是否是一场UserRound
         type: Number,
