@@ -34,7 +34,8 @@ let battleSchema = new mongoose.Schema({
         battle_result: {
             type: String,
             enum: ["AI1_WIN", "AI2_WIN", "TIE"]
-        }
+        },
+        battle_message: String,
     },
     rev: {
         ai1_compile_log: String,
@@ -44,7 +45,8 @@ let battleSchema = new mongoose.Schema({
         battle_result: {
             type: String,
             enum: ["AI1_WIN", "AI2_WIN", "TIE"]
-        }
+        },
+        battle_message: String,
     },
 
     created_date: { type: Date, default: Date.now }

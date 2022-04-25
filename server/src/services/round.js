@@ -32,3 +32,12 @@ exports.CreateUserRound = async (user) => {
     });
     await Battle.updateMany({ _id: { $in: battle_ids } }, { $set: { user_round } });
 };
+
+exports.BattleUpdate = async (battle) => {
+    if (battle.user_round) {
+        let user_round = await UserRound.findById(battle.user_round);
+        user_round.finished_battle_cnt = await Battle.find({ _id: { $in: user_round.battles }, status: "finished" }).count();
+        user_round.finished = user_round.finished_battle_cnt === user_round.battles.length;
+        await user_round.save();
+    }
+};

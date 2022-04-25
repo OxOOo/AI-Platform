@@ -17,7 +17,7 @@ mkdir -p $output_dir
 rm -rf $output_dir
 mkdir -p $output_dir
 
-command="sudo docker run --rm"
+command="docker run --rm"
 command="$command -v $ai1_path:/root/code/ai1.cpp:ro"
 command="$command -v $ai2_path:/root/code/ai2.cpp:ro"
 command="$command -v $PWD/run.py:/root/code/run.py:ro"
