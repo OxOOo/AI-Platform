@@ -48,7 +48,7 @@ export default {
         return {
             columns: [
                 {
-                    title: "编号",
+                    title: "版本",
                     dataIndex: "_id",
                     width: 100
                 },

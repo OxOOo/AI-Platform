@@ -120,11 +120,23 @@ function pick_battle(battle) {
 router.get("/user_round", auth.LoginRequired, async ctx => {
     let user_round = await UserRound.findById(ctx.query.user_round_id)
         .populate("user")
-        .populate("battles")
-        .populate("battles.ai1")
-        .populate("battles.ai1.user")
-        .populate("battles.ai2")
-        .populate("battles.ai2.user");
+        .populate({
+            path: "battles",
+            populate: [
+                {
+                    path: "ai1",
+                    populate: {
+                        path: "user"
+                    }
+                },
+                {
+                    path: "ai2",
+                    populate: {
+                        path: "user"
+                    }
+                }
+            ]
+        });
     ctx.assert(user_round, "参数错误");
 
     ctx.body = {

@@ -12,7 +12,7 @@ let userRoundSchema = new mongoose.Schema({
     battles: {
         type: [{
             type: Number,
-            ref: "User",
+            ref: "Battle",
             required: true
         }],
         required: true,
