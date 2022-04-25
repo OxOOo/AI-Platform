@@ -91,7 +91,7 @@ export default {
                 ai1_win_cnt++;
             }
             if (ai1_win_cnt === 2) {
-                return "AI2赢两局";
+                return "AI1赢两局";
             }
             if (ai2_win_cnt === 2) {
                 return "AI2赢两局";
