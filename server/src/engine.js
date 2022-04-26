@@ -109,6 +109,7 @@ async function main() {
             if (battle) {
                 while (true) {
                     if (battle.user_round) break;
+                    if (battle.battle_round) break;
                     await sleep(100);
                     battle = await Battle.findById(battle._id);
                 }

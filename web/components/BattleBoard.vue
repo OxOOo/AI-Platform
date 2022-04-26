@@ -29,6 +29,14 @@
     <br>
     <div style="display: flex; justify-content: center; align-items: center;">
       <a-button-group>
+        <a-button type="primary" :disabled="(moves || []).length == 0" @click="moveBegin">
+          清空棋盘
+        </a-button>
+        <a-button type="primary" :disabled="(moves || []).length == 0" @click="moveEnd">
+          移动到最后
+        </a-button>
+      </a-button-group>
+      <a-button-group style="margin-left: 10px">
         <a-button type="primary" :disabled="moves_cnt == 0" @click="movePrev">
           <a-icon type="left" />上一步
         </a-button>
@@ -233,6 +241,16 @@ export default {
         },
         showDateTime (datetime) {
             return moment(datetime).format("YYYY-MM-DD HH:mm");
+        },
+        moveBegin() {
+          this.autoplay = false;
+          this.moves_cnt = 0;
+          this.drawStatus();
+        },
+        moveEnd() {
+          this.autoplay = false;
+          this.moves_cnt = (this.moves || []).length;
+          this.drawStatus();
         },
         movePrev () {
             this.autoplay = false;

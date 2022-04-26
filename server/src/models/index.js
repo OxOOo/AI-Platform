@@ -17,3 +17,4 @@ exports.User = require("./user")(connection);
 exports.AI = require("./ai")(connection);
 exports.Battle = require("./battle")(connection);
 exports.UserRound = require("./user_round")(connection);
+exports.BattleRound = require("./battle_round")(connection);
