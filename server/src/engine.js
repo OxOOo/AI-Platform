@@ -6,12 +6,14 @@ let _ = require("lodash");
 let path = require("path");
 let fs = require("fs");
 let child_process = require("child_process");
+let os = require("os");
 
 const MAX_THREADS = 10;
 const DATA_PATH = path.resolve(__dirname, "..", "..", "data");
 const ENGINE_PATH = path.resolve(__dirname, "..", "..", "engine");
 
-let idle_cpus = _.range(MAX_THREADS);
+let idle_cpus = _.range(Math.min(MAX_THREADS, os.cpus().length));
+console.log(`idle_cpus = ${idle_cpus}`);
 let runnings = new Set();
 
 async function run_thread(cpu, battle) {
@@ -39,6 +41,14 @@ async function run_thread(cpu, battle) {
             console.log(`Battle ${battle._id} : ${command}`);
 
             let p = child_process.exec(command, { cwd: ENGINE_PATH, env: { CPUSET: cpu } });
+            let stdouts = [];
+            let stderrs = [];
+            p.stdout.on("data", (chunk) => {
+                stdouts.push(Buffer.from(chunk));
+            });
+            p.stderr.on("data", (chunk) => {
+                stderrs.push(Buffer.from(chunk));
+            });
             while (true) {
                 if (!_.isNull(p.exitCode)) {
                     break;
@@ -46,6 +56,8 @@ async function run_thread(cpu, battle) {
                 await sleep(100);
             }
             p.kill();
+            fs.writeFileSync(path.join(output_path, "stdout.txt"), Buffer.concat(stdouts));
+            fs.writeFileSync(path.join(output_path, "stderr.txt"), Buffer.concat(stderrs));
 
             let ai1_compile_log = "";
             let ai2_compile_log = "";
