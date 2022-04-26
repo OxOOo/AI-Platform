@@ -3,7 +3,7 @@ let Router = require("koa-router");
 let _ = require("lodash");
 let auth = require("../services/auth");
 let round = require("../services/round");
-let { AI, UserRound } = require("../models");
+let { AI, UserRound, Battle } = require("../models");
 
 const router = module.exports = new Router();
 
@@ -148,6 +148,53 @@ router.get("/user_round", auth.LoginRequired, async ctx => {
             finished_battle_cnt: user_round.finished_battle_cnt,
             finished: user_round.finished,
             created_date: user_round.created_date
+        }
+    };
+});
+
+// 下载一局已经结束的对局,?battle_id
+router.get("/battle", auth.LoginRequired, async ctx => {
+    let battle = await Battle.findById(ctx.query.battle_id)
+        .populate({
+            path: "ai1",
+            populate: {
+                path: "user"
+            }
+        })
+        .populate({
+            path: "ai2",
+            populate: {
+                path: "user"
+            }
+        });
+    ctx.assert(battle);
+    ctx.assert(battle.status === "finished", "对局未结束");
+
+    if (battle.ai1.user._id !== ctx.state.user._id) {
+        battle.pos.ai1_compile_log = "";
+        battle.rev.ai2_compile_log = "";
+    }
+    if (battle.ai2.user._id !== ctx.state.user._id) {
+        battle.pos.ai2_compile_log = "";
+        battle.rev.ai1_compile_log = "";
+    }
+
+    ctx.body = {
+        success: true,
+        data: {
+            _id: battle._id,
+            ai1: {
+                _id: battle.ai1._id,
+                user: _.pick(battle.ai1.user, ["_id", "username", "nickname"])
+            },
+            ai2: {
+                _id: battle.ai2._id,
+                user: _.pick(battle.ai2.user, ["_id", "username", "nickname"])
+            },
+            status: battle.status,
+            pos: battle.pos,
+            rev: battle.rev,
+            created_date: battle.created_date
         }
     };
 });
