@@ -43,6 +43,7 @@ exports.CreateBattleRound = async () => {
             ai_ids.push(ai._id);
         }
     }
+    assert(ai_ids.length > 1, "提交AI的用户不足2人");
 
     let battle_ids = [];
     for (let i = 0; i < ai_ids.length; i++) {

@@ -242,15 +242,15 @@ export default {
         showDateTime (datetime) {
             return moment(datetime).format("YYYY-MM-DD HH:mm");
         },
-        moveBegin() {
-          this.autoplay = false;
-          this.moves_cnt = 0;
-          this.drawStatus();
+        moveBegin () {
+            this.autoplay = false;
+            this.moves_cnt = 0;
+            this.drawStatus();
         },
-        moveEnd() {
-          this.autoplay = false;
-          this.moves_cnt = (this.moves || []).length;
-          this.drawStatus();
+        moveEnd () {
+            this.autoplay = false;
+            this.moves_cnt = (this.moves || []).length;
+            this.drawStatus();
         },
         movePrev () {
             this.autoplay = false;

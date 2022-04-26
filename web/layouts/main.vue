@@ -29,6 +29,11 @@
               选手发起的对战
             </nuxt-link>
           </a-menu-item>
+          <a-menu-item key="battle_rounds">
+            <nuxt-link to="/battle_rounds">
+              两两对战
+            </nuxt-link>
+          </a-menu-item>
         </a-menu>
       </a-layout-header>
       <a-layout>
@@ -98,6 +103,8 @@ export default {
                 this.selected_menus = ["myais"];
             } else if (_.startsWith(path, "/user_rounds")) {
                 this.selected_menus = ["user_rounds"];
+            } else if (_.startsWith(path, "/battle_rounds")) {
+                this.selected_menus = ["battle_rounds"];
             } else {
                 this.selected_menus = [];
             }

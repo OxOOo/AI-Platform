@@ -3,7 +3,7 @@ let Router = require("koa-router");
 let _ = require("lodash");
 let auth = require("../services/auth");
 let round = require("../services/round");
-let { AI, UserRound, Battle } = require("../models");
+let { AI, UserRound, Battle, BattleRound } = require("../models");
 
 const router = module.exports = new Router();
 
@@ -138,6 +138,7 @@ router.get("/user_round", auth.LoginRequired, async ctx => {
             ]
         });
     ctx.assert(user_round, "参数错误");
+    ctx.assert(user_round.finished, "对局未结束");
 
     ctx.body = {
         success: true,
@@ -195,6 +196,82 @@ router.get("/battle", auth.LoginRequired, async ctx => {
             pos: battle.pos,
             rev: battle.rev,
             created_date: battle.created_date
+        }
+    };
+});
+
+// 两两对战列表,current=1&page_size=20
+router.get("/battle_rounds", auth.LoginRequired, async ctx => {
+    let condition = {};
+
+    let total = await BattleRound.find(condition).count();
+    let current = parseInt(ctx.query.current || 1);
+    current = Math.max(1, current);
+    let page_size = parseInt(ctx.query.page_size || 20);
+    page_size = Math.max(10, Math.min(100, page_size));
+    let battle_rounds = await BattleRound.find(condition).sort("-_id").skip((current - 1) * page_size).limit(page_size);
+
+    ctx.body = {
+        success: true,
+        total,
+        current,
+        page_size,
+        data: battle_rounds.map(x => {
+            return {
+                _id: x._id,
+                battles: x.battles,
+                finished_battle_cnt: x.finished_battle_cnt,
+                finished: x.finished,
+                created_date: x.created_date
+            };
+        })
+    };
+});
+
+// 两两对战, ?battle_round_id
+router.get("/battle_round", auth.LoginRequired, async ctx => {
+    let battle_round = await BattleRound.findById(ctx.query.battle_round_id)
+        .populate({
+            path: "ais",
+            populate: {
+                path: "user"
+            }
+        })
+        .populate({
+            path: "battles",
+            populate: [
+                {
+                    path: "ai1",
+                    populate: {
+                        path: "user"
+                    }
+                },
+                {
+                    path: "ai2",
+                    populate: {
+                        path: "user"
+                    }
+                }
+            ]
+        });
+    ctx.assert(battle_round, "参数错误");
+    ctx.assert(battle_round.finished, "对局未结束");
+
+    ctx.body = {
+        success: true,
+        data: {
+            _id: battle_round._id,
+            ais: battle_round.ais.map(x => {
+                return {
+                    _id: x._id,
+                    user: _.pick(x.user, ["_id", "username", "nickname"])
+                };
+            }),
+            battles: battle_round.battles.map(pick_battle),
+            scores: battle_round.scores,
+            finished_battle_cnt: battle_round.finished_battle_cnt,
+            finished: battle_round.finished,
+            created_date: battle_round.created_date
         }
     };
 });
