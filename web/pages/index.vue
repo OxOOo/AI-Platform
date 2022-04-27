@@ -16,7 +16,7 @@
       </div>
       <a-divider />
       <div>
-        参赛手册：<a href="#">下载</a>
+        参赛手册：<a href="五子棋AI大赛参赛手册-v1.pdf">五子棋AI大赛参赛手册-v1.pdf</a>
       </div>
     </div>
     <div v-else>
