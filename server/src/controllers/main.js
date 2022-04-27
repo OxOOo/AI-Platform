@@ -219,6 +219,7 @@ router.get("/battle_rounds", auth.LoginRequired, async ctx => {
         data: battle_rounds.map(x => {
             return {
                 _id: x._id,
+                ais: x.ais,
                 battles: x.battles,
                 finished_battle_cnt: x.finished_battle_cnt,
                 finished: x.finished,

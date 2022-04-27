@@ -17,6 +17,9 @@
       <span slot="user" slot-scope="_,row">
         {{ row.user.nickname }}
       </span>
+      <span slot="battle_num" slot-scope="_,row">
+        {{ row.battles.length }}
+      </span>
       <span slot="datetime" slot-scope="datetime">
         {{ showDateTime(datetime) }}
       </span>
@@ -59,6 +62,11 @@ export default {
                     title: "发起人",
                     width: 100,
                     scopedSlots: { customRender: "user" }
+                },
+                {
+                    title: "对局数量",
+                    width: 100,
+                    scopedSlots: { customRender: "battle_num" }
                 },
                 {
                     title: "对战状态",

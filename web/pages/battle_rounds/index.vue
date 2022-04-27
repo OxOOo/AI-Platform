@@ -14,6 +14,9 @@
         </nuxt-link>
         <span v-else>{{ row._id }}</span>
       </span>
+      <span slot="ai_num" slot-scope="_,row">
+        {{ row.ais.length }}
+      </span>
       <span slot="datetime" slot-scope="datetime">
         {{ showDateTime(datetime) }}
       </span>
@@ -51,6 +54,11 @@ export default {
                     title: "编号",
                     width: 100,
                     scopedSlots: { customRender: "id" }
+                },
+                {
+                    title: "AI数量",
+                    width: 100,
+                    scopedSlots: { customRender: "ai_num" }
                 },
                 {
                     title: "对战状态",
