@@ -12,7 +12,7 @@ const MAX_THREADS = 10;
 const DATA_PATH = path.resolve(__dirname, "..", "..", "data");
 const ENGINE_PATH = path.resolve(__dirname, "..", "..", "engine");
 
-let idle_cpus = _.range(Math.min(MAX_THREADS, os.cpus().length));
+let idle_cpus = _.range(Math.min(MAX_THREADS, os.cpus().length - 2));
 console.log(`idle_cpus = ${idle_cpus}`);
 let runnings = new Set();
 
