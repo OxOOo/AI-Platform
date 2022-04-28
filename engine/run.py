@@ -181,8 +181,13 @@ def main():
         status = board.str_status()
         player = board.current_player
 
-        ais[player].stdin.write((status + "\n").encode())
-        ais[player].stdin.flush()
+        if ais[player].poll() is not None:
+            raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}异常退出")
+        try:
+            ais[player].stdin.write((status + "\n").encode())
+            ais[player].stdin.flush()
+        except BrokenPipeError:
+            raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}异常退出")
         wait_readable(ais[player].stdout, 5, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}计算超时"))
         line = ais[player].stdout.readline()
         line = line.decode().strip()
@@ -191,7 +196,7 @@ def main():
             x = int(x)
             y = int(y)
         except:
-            raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}输出错误：`{line}`")
+            raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}输出格式错误，输出内容为`{line}`")
         board.move(x, y)
         moves.append({"x": x, "y": y, "player": player})
         with open("/root/output/moves.json", "w") as fd:
