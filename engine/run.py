@@ -191,6 +191,8 @@ def main():
         wait_readable(ais[player].stdout, 5, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}计算超时"))
         line = ais[player].stdout.readline()
         line = line.decode().strip()
+        if ais[player].poll() is not None:
+            raise Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}异常退出")
         try:
             x, y = line.split()
             x = int(x)
