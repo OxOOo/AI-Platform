@@ -36,6 +36,9 @@
           移动到最后
         </a-button>
       </a-button-group>
+      <button ref="copy" type="primary" style="margin-left: 10px" :data-clipboard-text="boardStatus">
+        复制当前局面到剪贴板
+      </button>
       <a-button-group style="margin-left: 10px">
         <a-button type="primary" :disabled="moves_cnt == 0" @click="movePrev">
           <a-icon type="left" />上一步
@@ -66,6 +69,8 @@
 
 <script>
 import moment from "moment";
+import Clipboard from "clipboard";
+import _ from "lodash";
 
 const CHESSBOARD_OFFSET = 60;
 const CHESSBOARD_CELL_SIZE = 40;
@@ -132,6 +137,19 @@ export default {
             }
             show_moves.reverse();
             return show_moves;
+        },
+        boardStatus () {
+            let player = 1;
+            const chessboard = _.range(11).map(i => _.range(11).map(i => 0));
+
+            for (let i = 0; i < this.moves_cnt && i < (this.moves || []).length; i++) {
+                const move = this.moves[i];
+                chessboard[move.x][move.y] = move.player;
+                player = 3 - move.player;
+            }
+
+            const board = chessboard.map(row => row.map(x => `${x}`).join(" ")).join("\n");
+            return `${player}\n${board}`;
         }
     },
     watch: {
@@ -153,6 +171,14 @@ export default {
                 this.drawStatus();
             }
         }, 1000);
+
+        const clip = new Clipboard(this.$refs.copy);
+        clip.on("success", () => {
+            this.$message.success("拷贝成功");
+        });
+        clip.on("error", () => {
+            this.$message.error("拷贝失败");
+        });
     },
     unmounted () {
         clearInterval(this.timerhandle);

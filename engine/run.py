@@ -146,7 +146,7 @@ def main():
             subprocess.run(
                 shlex.split(f"g++ --std=c++14 -O2 /root/code/ai{num}.cpp -o /root/code/ai{num}.exe"),
                 capture_output=True,
-                timeout=10,
+                timeout=30,
                 check=True)
         except subprocess.TimeoutExpired:
             raise Result(win, f"AI{num}编译超时")
@@ -169,7 +169,7 @@ def main():
     for player in [1, 2]:
         ais[player] = subprocess.Popen([f"/root/code/ai{player}.exe"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, preexec_fn=set_ai_user(player))
     for player in [1, 2]:
-        wait_readable(ais[player].stdout, 10, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}初始化超时"))
+        wait_readable(ais[player].stdout, 30, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}初始化超时"))
         line = ais[player].stdout.readline()
         line = line.decode().strip()
         if line != "init end":
@@ -183,7 +183,7 @@ def main():
 
         ais[player].stdin.write((status + "\n").encode())
         ais[player].stdin.flush()
-        wait_readable(ais[player].stdout, 1, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}计算超时"))
+        wait_readable(ais[player].stdout, 5, Result(Win.AI2_WIN if player == 1 else Win.AI1_WIN, f"AI{player}计算超时"))
         line = ais[player].stdout.readline()
         line = line.decode().strip()
         try:
