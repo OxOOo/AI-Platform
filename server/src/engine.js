@@ -8,7 +8,7 @@ let fs = require("fs");
 let child_process = require("child_process");
 let os = require("os");
 
-const MAX_THREADS = 10;
+const MAX_THREADS = 20;
 const DATA_PATH = path.resolve(__dirname, "..", "..", "data");
 const ENGINE_PATH = path.resolve(__dirname, "..", "..", "engine");
 
